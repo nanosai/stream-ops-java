@@ -10,7 +10,7 @@ how this can be done) and Google App Engine apps.
 Stream Ops design differences also supports a wider set of use cases than Kafka does out-of-the-box. We will
 describe these differences as the code that provides them is cleaned up and released.
 
-Stream Ops is developed by Nanosai: (https://nanosai.com)[http://nanosai.com]
+Stream Ops is developed by Nanosai: [http://nanosai.com](https://nanosai.com)
 
 
 
