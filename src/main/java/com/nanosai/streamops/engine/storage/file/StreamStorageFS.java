@@ -6,14 +6,14 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class StreamFileStorage {
+public class StreamStorageFS {
 
     private String streamId    = null;
     private String rootDirPath = null;
 
-    private   List<StreamFileStorageBlock> storageBlocks = new ArrayList<>();
+    private   List<StreamStorageBlockFS> storageBlocks = new ArrayList<>();
 
-    private   StreamFileStorageBlock latestBlock             = null;
+    private StreamStorageBlockFS latestBlock             = null;
     private   FileOutputStream       latestBlockOutputStream = null;
 
     private long storageFileBlockMaxSize = 1024 * 1024;
@@ -22,14 +22,14 @@ public class StreamFileStorage {
 
     protected byte[] offsetRionBuffer = new byte[16];
 
-    public StreamFileStorage(String streamId, String rootDirPath) throws IOException {
+    public StreamStorageFS(String streamId, String rootDirPath) throws IOException {
         this.streamId    = streamId;
         this.rootDirPath = rootDirPath;
 
         syncFromDisk();
     }
 
-    public StreamFileStorage(String streamId, String rootDirPath, long storageFileBlockMaxSize) throws IOException {
+    public StreamStorageFS(String streamId, String rootDirPath, long storageFileBlockMaxSize) throws IOException {
         this.streamId    = streamId;
         this.rootDirPath = rootDirPath;
         this.storageFileBlockMaxSize = storageFileBlockMaxSize;
@@ -37,15 +37,23 @@ public class StreamFileStorage {
         syncFromDisk();
     }
 
+    public String getStreamId() {
+        return streamId;
+    }
+
+    public String getRootDirPath() {
+        return rootDirPath;
+    }
+
     public long getStorageFileBlockMaxSize() {
         return this.storageFileBlockMaxSize;
     }
 
-    public StreamFileStorageBlock getLatestBlock() {
+    public StreamStorageBlockFS getLatestBlock() {
         return this.latestBlock;
     }
 
-    public List<StreamFileStorageBlock> getStorageBlocks() {
+    public List<StreamStorageBlockFS> getStorageBlocks() {
         return storageBlocks;
     }
 
@@ -91,13 +99,13 @@ public class StreamFileStorage {
             String fileName = file.getName();
             long firstOffset = Long.parseLong(fileName.substring(fileName.lastIndexOf("-") + 1, fileName.length()));
             long fileLength  = file.length();
-            StreamFileStorageBlock fileStorageBlock = new StreamFileStorageBlock(file.getName(),fileLength, firstOffset);
+            StreamStorageBlockFS fileStorageBlock = new StreamStorageBlockFS(file.getName(),fileLength, firstOffset);
             this.storageBlocks.add(fileStorageBlock);
         }
         if(this.storageBlocks.size() > 0) {
             this.latestBlock = storageBlocks.get(storageBlocks.size()-1);
         } else {
-            this.latestBlock = new StreamFileStorageBlock(createNewStreamBlockFileName(), 0, 0);
+            this.latestBlock = new StreamStorageBlockFS(createNewStreamBlockFileName(), 0, 0);
             openForAppend();
             appendOffset();
             closeForAppend();
@@ -134,9 +142,9 @@ public class StreamFileStorage {
         if(this.latestBlock.fileLength + sourceLength > storageFileBlockMaxSize){
             //create a new latest block
             closeForAppend();
-            StreamFileStorageBlock newStreamFileStorageBlock = new StreamFileStorageBlock(createNewStreamBlockFileName(), 0, this.nextRecordOffset);
-            this.storageBlocks.add(newStreamFileStorageBlock);
-            this.latestBlock = newStreamFileStorageBlock;
+            StreamStorageBlockFS newStreamStorageBlockFS = new StreamStorageBlockFS(createNewStreamBlockFileName(), 0, this.nextRecordOffset);
+            this.storageBlocks.add(newStreamStorageBlockFS);
+            this.latestBlock = newStreamStorageBlockFS;
             openForAppend();
         }
         if(this.latestBlock.fileLength == 0){
@@ -154,9 +162,9 @@ public class StreamFileStorage {
     }
 
 
-    public int readStreamFileStorageBlock(StreamFileStorageBlock streamFileStorageBlock, long fromByte, byte[] dest, int destOffset, int length) throws IOException {
+    public int readStreamFileStorageBlock(StreamStorageBlockFS streamStorageBlockFS, long fromByte, byte[] dest, int destOffset, int length) throws IOException {
 
-        try(RandomAccessFile randomAccessFile = new RandomAccessFile(this.rootDirPath + "/" + streamFileStorageBlock.getFileName(), "r")){
+        try(RandomAccessFile randomAccessFile = new RandomAccessFile(this.rootDirPath + "/" + streamStorageBlockFS.getFileName(), "r")){
             randomAccessFile.seek(fromByte);
 
             return  randomAccessFile.read(dest, destOffset, length);

@@ -1,13 +1,13 @@
 package com.nanosai.streamops.engine.storage.file;
 
-public class StreamFileStorageBlock {
+public class StreamStorageBlockFS {
 
     private   String fileName    = null;
     private   long   firstOffset = 0;
     protected long   fileLength  = 0;
 
 
-    public StreamFileStorageBlock(String fileName, long fileLength, long firstOffset) {
+    public StreamStorageBlockFS(String fileName, long fileLength, long firstOffset) {
         this.fileName    = fileName;
         this.fileLength = fileLength;
         this.firstOffset = firstOffset;

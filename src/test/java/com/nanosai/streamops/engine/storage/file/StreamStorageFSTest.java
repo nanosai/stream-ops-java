@@ -8,37 +8,37 @@ import java.io.IOException;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-public class StreamFileStorageTest {
+public class StreamStorageFSTest {
 
     @Test
     public void testCreateNewStreamFileStorage() throws IOException {
-        StreamFileStorage streamFileStorage = new StreamFileStorage("test-stream-1", "data/test-stream-1");
+        StreamStorageFS streamStorageFS = new StreamStorageFS("test-stream-1", "data/test-stream-1");
 
-        assertNotNull(streamFileStorage.getLatestBlock());
-        assertEquals("test-stream-1-0000000000000000", streamFileStorage.getLatestBlock().getFileName());
-        assertEquals(1, streamFileStorage.getStorageBlocks().size());
+        assertNotNull(streamStorageFS.getLatestBlock());
+        assertEquals("test-stream-1-0000000000000000", streamStorageFS.getLatestBlock().getFileName());
+        assertEquals(1, streamStorageFS.getStorageBlocks().size());
     }
 
     @Test
     public void testAppendToStreamFileStorage() throws IOException {
         initStreamDir("data/test-stream-1");
 
-        StreamFileStorage streamFileStorage = new StreamFileStorage("test-stream-1", "data/test-stream-1");
+        StreamStorageFS streamStorageFS = new StreamStorageFS("test-stream-1", "data/test-stream-1");
 
         byte[] rionBytesRecord = new byte[]{0x01, 0x08, 0,1,2,3,4,5,6,7}; //10 bytes in total, 8 bytes in the RION Bytes field body
 
         //todo next step is to test append, and see that files are created and data written to it.
-        streamFileStorage.openForAppend();
-        streamFileStorage.appendRecord(rionBytesRecord, 0, rionBytesRecord.length);
-        streamFileStorage.closeForAppend();
+        streamStorageFS.openForAppend();
+        streamStorageFS.appendRecord(rionBytesRecord, 0, rionBytesRecord.length);
+        streamStorageFS.closeForAppend();
 
-        assertEquals(13, streamFileStorage.getLatestBlock().fileLength);
+        assertEquals(13, streamStorageFS.getLatestBlock().fileLength);
 
-        streamFileStorage.openForAppend();
-        streamFileStorage.appendRecord(rionBytesRecord, 0, rionBytesRecord.length);
-        streamFileStorage.closeForAppend();
+        streamStorageFS.openForAppend();
+        streamStorageFS.appendRecord(rionBytesRecord, 0, rionBytesRecord.length);
+        streamStorageFS.closeForAppend();
 
-        assertEquals(23, streamFileStorage.getLatestBlock().fileLength);
+        assertEquals(23, streamStorageFS.getLatestBlock().fileLength);
 
     }
 
@@ -49,29 +49,29 @@ public class StreamFileStorageTest {
     public void testAppendSplitsIntoMultipleFiles() throws IOException {
         initStreamDir("data/test-stream-1");
 
-        StreamFileStorage streamFileStorage = new StreamFileStorage("test-stream-1", "data/test-stream-1", 20);
+        StreamStorageFS streamStorageFS = new StreamStorageFS("test-stream-1", "data/test-stream-1", 20);
 
         byte[] rionBytesRecord1 = new byte[]{0x01, 0x08, 0,1,2,3,4,5,6,7}; //10 bytes in total, 8 bytes in the RION Bytes field body
         byte[] rionBytesRecord2 = new byte[]{0x01, 0x08, 0,1,2,3,4,5,6,7}; //10 bytes in total, 8 bytes in the RION Bytes field body
         byte[] rionBytesRecord3 = new byte[]{0x01, 0x04, 0,1,2,3};         //10 bytes in total, 8 bytes in the RION Bytes field body
         byte[] rionBytesRecord4 = new byte[]{0x01, 0x04, 0,2,4,6};        //10 bytes in total, 8 bytes in the RION Bytes field body
 
-        streamFileStorage.openForAppend();
-        streamFileStorage.appendRecord(rionBytesRecord1, 0, rionBytesRecord1.length);
-        streamFileStorage.appendRecord(rionBytesRecord2, 0, rionBytesRecord2.length);
-        streamFileStorage.appendRecord(rionBytesRecord3, 0, rionBytesRecord3.length);
-        streamFileStorage.appendRecord(rionBytesRecord4, 0, rionBytesRecord4.length);
-        streamFileStorage.closeForAppend();
+        streamStorageFS.openForAppend();
+        streamStorageFS.appendRecord(rionBytesRecord1, 0, rionBytesRecord1.length);
+        streamStorageFS.appendRecord(rionBytesRecord2, 0, rionBytesRecord2.length);
+        streamStorageFS.appendRecord(rionBytesRecord3, 0, rionBytesRecord3.length);
+        streamStorageFS.appendRecord(rionBytesRecord4, 0, rionBytesRecord4.length);
+        streamStorageFS.closeForAppend();
 
-        assertEquals(3, streamFileStorage.getStorageBlocks().size());
-        assertEquals(13, streamFileStorage.getStorageBlocks().get(0).fileLength);
-        assertEquals(19, streamFileStorage.getStorageBlocks().get(1).fileLength);
-        assertEquals( 9, streamFileStorage.getStorageBlocks().get(2).fileLength);
+        assertEquals(3, streamStorageFS.getStorageBlocks().size());
+        assertEquals(13, streamStorageFS.getStorageBlocks().get(0).fileLength);
+        assertEquals(19, streamStorageFS.getStorageBlocks().get(1).fileLength);
+        assertEquals( 9, streamStorageFS.getStorageBlocks().get(2).fileLength);
 
         byte[] dest1 = new byte[13];
 
-        int bytesRead1 = streamFileStorage.readStreamFileStorageBlock(
-                streamFileStorage.getStorageBlocks().get(0), 0, dest1, 0, 13);
+        int bytesRead1 = streamStorageFS.readStreamFileStorageBlock(
+                streamStorageFS.getStorageBlocks().get(0), 0, dest1, 0, 13);
 
         assertEquals(13, bytesRead1);
 
@@ -93,8 +93,8 @@ public class StreamFileStorageTest {
 
         byte[] dest2 = new byte[19];
 
-        int bytesRead2 = streamFileStorage.readStreamFileStorageBlock(
-                streamFileStorage.getStorageBlocks().get(1), 0, dest2, 0, 19);
+        int bytesRead2 = streamStorageFS.readStreamFileStorageBlock(
+                streamStorageFS.getStorageBlocks().get(1), 0, dest2, 0, 19);
 
         assertEquals(19, bytesRead2);
 
@@ -124,8 +124,8 @@ public class StreamFileStorageTest {
 
         byte[] dest3 = new byte[9];
 
-        int bytesRead3 = streamFileStorage.readStreamFileStorageBlock(
-                streamFileStorage.getStorageBlocks().get(2), 0, dest3, 0, 9);
+        int bytesRead3 = streamStorageFS.readStreamFileStorageBlock(
+                streamStorageFS.getStorageBlocks().get(2), 0, dest3, 0, 9);
 
         assertEquals(9, bytesRead3);
 
@@ -161,9 +161,9 @@ public class StreamFileStorageTest {
 
     @Test
     public void testToHex() {
-        assertEquals("0000000000000000", StreamFileStorage.toHex(0x0));
-        assertEquals("000000000000000F", StreamFileStorage.toHex(0xF));
-        assertEquals("00000000000000FF", StreamFileStorage.toHex(0xFF));
-        assertEquals("FEDCBA9876543210", StreamFileStorage.toHex(0xFEDCBA9876543210L));
+        assertEquals("0000000000000000", StreamStorageFS.toHex(0x0));
+        assertEquals("000000000000000F", StreamStorageFS.toHex(0xF));
+        assertEquals("00000000000000FF", StreamStorageFS.toHex(0xFF));
+        assertEquals("FEDCBA9876543210", StreamStorageFS.toHex(0xFEDCBA9876543210L));
     }
 }
