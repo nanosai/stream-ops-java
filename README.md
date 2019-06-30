@@ -13,6 +13,12 @@ describe these differences as the code that provides them is cleaned up and rele
 Stream Ops is developed by Nanosai: [http://nanosai.com](https://nanosai.com)
 
 
+# Stream Ops Tutorial
+We have a Stream Ops tutorial in progress here:
+
+[http://tutorials.jenkov.com/stream-ops-java/index.html](http://tutorials.jenkov.com/stream-ops-java/index.html)
+
+
 
 
 

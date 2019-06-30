@@ -162,7 +162,7 @@ public class StreamStorageFS {
     }
 
 
-    public int readStreamFileStorageBlock(StreamStorageBlockFS streamStorageBlockFS, long fromByte, byte[] dest, int destOffset, int length) throws IOException {
+    public int readBytes(StreamStorageBlockFS streamStorageBlockFS, long fromByte, byte[] dest, int destOffset, int length) throws IOException {
 
         try(RandomAccessFile randomAccessFile = new RandomAccessFile(this.rootDirPath + "/" + streamStorageBlockFS.getFileName(), "r")){
             randomAccessFile.seek(fromByte);
