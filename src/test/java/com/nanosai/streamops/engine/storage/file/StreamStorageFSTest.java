@@ -43,6 +43,10 @@ public class StreamStorageFSTest {
     }
 
 
+    @Test
+    public void testNop() {
+        System.out.println("Doing nothing");
+    }
 
 
     @Test
@@ -68,78 +72,81 @@ public class StreamStorageFSTest {
         assertEquals(19, streamStorageFS.getStorageBlocks().get(1).fileLength);
         assertEquals( 9, streamStorageFS.getStorageBlocks().get(2).fileLength);
 
-        byte[] dest1 = new byte[13];
+        byte[] dest1 = new byte[14];
 
         int bytesRead1 = streamStorageFS.readBytes(
-                streamStorageFS.getStorageBlocks().get(0), 0, dest1, 0, 13);
+                streamStorageFS.getStorageBlocks().get(0), 0, dest1, 0, 14);
 
-        assertEquals(13, bytesRead1);
+        assertEquals(14, bytesRead1);
 
         assertEquals(0xF1, 255 & dest1[0]); // first  byte of a RION Extended Field with field byte length 1
         assertEquals(0x01, 255 & dest1[1]); // second byte of a RION Extended Field with field type 1 ( Extended 1 = stream record offset).
-        assertEquals(0x00, 255 & dest1[2]); // record offset is expected to be 0.
+        assertEquals(   1, 255 & dest1[2]); // length byte of a RION Extended Field - expected to be 1 byte.
+        assertEquals(0x00, 255 & dest1[3]); // record offset is expected to be 0.
 
-        assertEquals(0x01, 255 & dest1[3]); // lead byte of RION Bytes field - with length byte count 1
-        assertEquals(0x08, 255 & dest1[4]); // length byte of RION Bytes field. Total length of RION Bytes field body is 8 bytes
+        assertEquals(0x01, 255 & dest1[4]); // lead byte of RION Bytes field - with length byte count 1
+        assertEquals(0x08, 255 & dest1[5]); // length byte of RION Bytes field. Total length of RION Bytes field body is 8 bytes
 
-        assertEquals(0x00, 255 & dest1[5]); // length byte of RION Bytes field. Total length of RION Bytes field body is 8 bytes
-        assertEquals(0x01, 255 & dest1[6]); // length byte of RION Bytes field. Total length of RION Bytes field body is 8 bytes
-        assertEquals(0x02, 255 & dest1[7]); // length byte of RION Bytes field. Total length of RION Bytes field body is 8 bytes
-        assertEquals(0x03, 255 & dest1[8]); // length byte of RION Bytes field. Total length of RION Bytes field body is 8 bytes
-        assertEquals(0x04, 255 & dest1[9]); // length byte of RION Bytes field. Total length of RION Bytes field body is 8 bytes
-        assertEquals(0x05, 255 & dest1[10]); // length byte of RION Bytes field. Total length of RION Bytes field body is 8 bytes
-        assertEquals(0x06, 255 & dest1[11]); // length byte of RION Bytes field. Total length of RION Bytes field body is 8 bytes
-        assertEquals(0x07, 255 & dest1[12]); // length byte of RION Bytes field. Total length of RION Bytes field body is 8 bytes
+        assertEquals(0x00, 255 & dest1[6]); // length byte of RION Bytes field. Total length of RION Bytes field body is 8 bytes
+        assertEquals(0x01, 255 & dest1[7]); // length byte of RION Bytes field. Total length of RION Bytes field body is 8 bytes
+        assertEquals(0x02, 255 & dest1[8]); // length byte of RION Bytes field. Total length of RION Bytes field body is 8 bytes
+        assertEquals(0x03, 255 & dest1[9]); // length byte of RION Bytes field. Total length of RION Bytes field body is 8 bytes
+        assertEquals(0x04, 255 & dest1[10]); // length byte of RION Bytes field. Total length of RION Bytes field body is 8 bytes
+        assertEquals(0x05, 255 & dest1[11]); // length byte of RION Bytes field. Total length of RION Bytes field body is 8 bytes
+        assertEquals(0x06, 255 & dest1[12]); // length byte of RION Bytes field. Total length of RION Bytes field body is 8 bytes
+        assertEquals(0x07, 255 & dest1[13]); // length byte of RION Bytes field. Total length of RION Bytes field body is 8 bytes
 
-        byte[] dest2 = new byte[19];
+        byte[] dest2 = new byte[20];
 
         int bytesRead2 = streamStorageFS.readBytes(
-                streamStorageFS.getStorageBlocks().get(1), 0, dest2, 0, 19);
+                streamStorageFS.getStorageBlocks().get(1), 0, dest2, 0, 20);
 
-        assertEquals(19, bytesRead2);
+        assertEquals(20, bytesRead2);
 
         assertEquals(0xF1, 255 & dest2[0]); // first  byte of a RION Extended Field with field byte length 1
         assertEquals(0x01, 255 & dest2[1]); // second byte of a RION Extended Field with field type 1 ( Extended 1 = stream record offset).
-        assertEquals(0x01, 255 & dest2[2]); // record offset is expected to be 1.
+        assertEquals(0x01, 255 & dest2[2]); // third byte of a RION Extended Field - length byte with value 1.
+        assertEquals(0x01, 255 & dest2[3]); // record offset is expected to be 1.
 
-        assertEquals(0x01, 255 & dest2[3]); // lead byte of RION Bytes field - with length byte count 1
-        assertEquals(0x08, 255 & dest2[4]); // length byte of RION Bytes field. Total length of RION Bytes field body is 8 bytes
+        assertEquals(0x01, 255 & dest2[4]); // lead byte of RION Bytes field - with length byte count 1
+        assertEquals(0x08, 255 & dest2[5]); // length byte of RION Bytes field. Total length of RION Bytes field body is 8 bytes
 
-        assertEquals(0x00, 255 & dest2[5]); // length byte of RION Bytes field. Total length of RION Bytes field body is 8 bytes
-        assertEquals(0x01, 255 & dest2[6]); // length byte of RION Bytes field. Total length of RION Bytes field body is 8 bytes
-        assertEquals(0x02, 255 & dest2[7]); // length byte of RION Bytes field. Total length of RION Bytes field body is 8 bytes
-        assertEquals(0x03, 255 & dest2[8]); // length byte of RION Bytes field. Total length of RION Bytes field body is 8 bytes
-        assertEquals(0x04, 255 & dest2[9]); // length byte of RION Bytes field. Total length of RION Bytes field body is 8 bytes
-        assertEquals(0x05, 255 & dest2[10]); // length byte of RION Bytes field. Total length of RION Bytes field body is 8 bytes
-        assertEquals(0x06, 255 & dest2[11]); // length byte of RION Bytes field. Total length of RION Bytes field body is 8 bytes
-        assertEquals(0x07, 255 & dest2[12]); // length byte of RION Bytes field. Total length of RION Bytes field body is 8 bytes
+        assertEquals(0x00, 255 & dest2[6]); // length byte of RION Bytes field. Total length of RION Bytes field body is 8 bytes
+        assertEquals(0x01, 255 & dest2[7]); // length byte of RION Bytes field. Total length of RION Bytes field body is 8 bytes
+        assertEquals(0x02, 255 & dest2[8]); // length byte of RION Bytes field. Total length of RION Bytes field body is 8 bytes
+        assertEquals(0x03, 255 & dest2[9]); // length byte of RION Bytes field. Total length of RION Bytes field body is 8 bytes
+        assertEquals(0x04, 255 & dest2[10]); // length byte of RION Bytes field. Total length of RION Bytes field body is 8 bytes
+        assertEquals(0x05, 255 & dest2[11]); // length byte of RION Bytes field. Total length of RION Bytes field body is 8 bytes
+        assertEquals(0x06, 255 & dest2[12]); // length byte of RION Bytes field. Total length of RION Bytes field body is 8 bytes
+        assertEquals(0x07, 255 & dest2[13]); // length byte of RION Bytes field. Total length of RION Bytes field body is 8 bytes
 
-        assertEquals(0x01, 255 & dest2[13]); // lead byte of RION Bytes field - with length byte count 1
-        assertEquals(0x04, 255 & dest2[14]); // length byte of RION Bytes field. Total length of RION Bytes field body is 8 bytes
+        assertEquals(0x01, 255 & dest2[14]); // lead byte of RION Bytes field - with length byte count 1
+        assertEquals(0x04, 255 & dest2[15]); // length byte of RION Bytes field. Total length of RION Bytes field body is 8 bytes
 
-        assertEquals(0x00, 255 & dest2[15]); // length byte of RION Bytes field. Total length of RION Bytes field body is 8 bytes
-        assertEquals(0x01, 255 & dest2[16]); // length byte of RION Bytes field. Total length of RION Bytes field body is 8 bytes
-        assertEquals(0x02, 255 & dest2[17]); // length byte of RION Bytes field. Total length of RION Bytes field body is 8 bytes
-        assertEquals(0x03, 255 & dest2[18]); // length byte of RION Bytes field. Total length of RION Bytes field body is 8 bytes
+        assertEquals(0x00, 255 & dest2[16]); // length byte of RION Bytes field. Total length of RION Bytes field body is 8 bytes
+        assertEquals(0x01, 255 & dest2[17]); // length byte of RION Bytes field. Total length of RION Bytes field body is 8 bytes
+        assertEquals(0x02, 255 & dest2[18]); // length byte of RION Bytes field. Total length of RION Bytes field body is 8 bytes
+        assertEquals(0x03, 255 & dest2[19]); // length byte of RION Bytes field. Total length of RION Bytes field body is 8 bytes
 
-        byte[] dest3 = new byte[9];
+        byte[] dest3 = new byte[10];
 
         int bytesRead3 = streamStorageFS.readBytes(
-                streamStorageFS.getStorageBlocks().get(2), 0, dest3, 0, 9);
+                streamStorageFS.getStorageBlocks().get(2), 0, dest3, 0, 10);
 
-        assertEquals(9, bytesRead3);
+        assertEquals(10, bytesRead3);
 
         assertEquals(0xF1, 255 & dest3[0]); // first  byte of a RION Extended Field with field byte length 1
         assertEquals(0x01, 255 & dest3[1]); // second byte of a RION Extended Field with field type 1 ( Extended 1 = stream record offset).
-        assertEquals(0x03, 255 & dest3[2]); // record offset is expected to be 1.
+        assertEquals(   1, 255 & dest3[2]); // third byte of a RION Extended Field -length byte with a value of 1.
+        assertEquals(0x03, 255 & dest3[3]); // record offset is expected to be 1.
 
-        assertEquals(0x01, 255 & dest3[3]); // lead byte of RION Bytes field - with length byte count 1
-        assertEquals(0x04, 255 & dest3[4]); // length byte of RION Bytes field. Total length of RION Bytes field body is 8 bytes
+        assertEquals(0x01, 255 & dest3[4]); // lead byte of RION Bytes field - with length byte count 1
+        assertEquals(0x04, 255 & dest3[5]); // length byte of RION Bytes field. Total length of RION Bytes field body is 8 bytes
 
-        assertEquals(0x00, 255 & dest3[5]); // length byte of RION Bytes field. Total length of RION Bytes field body is 8 bytes
-        assertEquals(0x02, 255 & dest3[6]); // length byte of RION Bytes field. Total length of RION Bytes field body is 8 bytes
-        assertEquals(0x04, 255 & dest3[7]); // length byte of RION Bytes field. Total length of RION Bytes field body is 8 bytes
-        assertEquals(0x06, 255 & dest3[8]); // length byte of RION Bytes field. Total length of RION Bytes field body is 8 bytes
+        assertEquals(0x00, 255 & dest3[6]); // length byte of RION Bytes field. Total length of RION Bytes field body is 8 bytes
+        assertEquals(0x02, 255 & dest3[7]); // length byte of RION Bytes field. Total length of RION Bytes field body is 8 bytes
+        assertEquals(0x04, 255 & dest3[8]); // length byte of RION Bytes field. Total length of RION Bytes field body is 8 bytes
+        assertEquals(0x06, 255 & dest3[9]); // length byte of RION Bytes field. Total length of RION Bytes field body is 8 bytes
 
     }
 
@@ -153,9 +160,12 @@ public class StreamStorageFSTest {
         File streamRootDir = new File(dirPath);
         if(streamRootDir.exists()) {
             for(File file : streamRootDir.listFiles()){
-                file.delete();
+                boolean deleted = file.delete();
+                System.out.println("Deleted " + file. getName() + " : " + deleted);
             }
-            streamRootDir.delete();
+            boolean deleted = streamRootDir.delete();
+            System.out.println("Deleted " + streamRootDir. getName() + " : " + deleted);
+
         }
     }
 

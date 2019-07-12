@@ -8,13 +8,15 @@ import java.util.List;
 
 public class StreamStorageFS {
 
+    public  static final int OFFSET_EXTENDED_RION_TYPE = 1;
+
     private String streamId    = null;
     private String rootDirPath = null;
 
     private   List<StreamStorageBlockFS> storageBlocks = new ArrayList<>();
 
     private StreamStorageBlockFS latestBlock             = null;
-    private   FileOutputStream       latestBlockOutputStream = null;
+    private   FileOutputStream   latestBlockOutputStream = null;
 
     private long storageFileBlockMaxSize = 1024 * 1024;
 
@@ -125,16 +127,17 @@ public class StreamStorageFS {
     public void appendOffset() throws IOException {
         int lengthOfOffset = (255 & RionUtil.lengthOfInt64Value(this.nextRecordOffset));
         byte rionExtendedFieldLeadByte = (byte) ((255 & (15 << 4)) | lengthOfOffset);
-        byte rionStreamOffsetType      = (byte) 1;
+        byte rionStreamOffsetType      = (byte) OFFSET_EXTENDED_RION_TYPE;
 
         this.offsetRionBuffer[0] = rionExtendedFieldLeadByte;
         this.offsetRionBuffer[1] = rionStreamOffsetType;
+        this.offsetRionBuffer[2] = (byte) (255 & lengthOfOffset);
 
-        int index = 2;
+        int index = 3;
         for(int i=(lengthOfOffset-1)*8; i >= 0; i-=8){
             this.offsetRionBuffer[index++] = (byte) (255 & (this.nextRecordOffset >> i));
         }
-        this.latestBlockOutputStream.write(this.offsetRionBuffer, 0, lengthOfOffset + 2);
+        this.latestBlockOutputStream.write(this.offsetRionBuffer, 0, lengthOfOffset + 3);
         this.latestBlock.fileLength += lengthOfOffset + 2;
     }
 
