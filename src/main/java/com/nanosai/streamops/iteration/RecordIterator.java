@@ -1,8 +1,8 @@
-package com.nanosai.streamops.engine;
+package com.nanosai.streamops.iteration;
 
 import com.nanosai.rionops.rion.RionFieldTypes;
 import com.nanosai.rionops.rion.read.RionReader;
-import com.nanosai.streamops.engine.storage.file.StreamStorageFS;
+import com.nanosai.streamops.storage.file.StreamStorageFS;
 
 public class RecordIterator {
 

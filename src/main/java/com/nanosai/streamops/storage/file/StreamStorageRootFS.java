@@ -1,4 +1,4 @@
-package com.nanosai.streamops.engine.storage.file;
+package com.nanosai.streamops.storage.file;
 
 import java.io.File;
 import java.io.IOException;

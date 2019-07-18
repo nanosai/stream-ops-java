@@ -1,9 +1,9 @@
 package com.nanosai.streamops.examples;
 
-import com.nanosai.rionops.rion.read.RionReader;
-import com.nanosai.streamops.engine.RecordIterator;
-import com.nanosai.streamops.engine.storage.file.StreamStorageBlockFS;
-import com.nanosai.streamops.engine.storage.file.StreamStorageFS;
+import com.nanosai.streamops.StreamOps;
+import com.nanosai.streamops.iteration.RecordIterator;
+import com.nanosai.streamops.storage.file.StreamStorageBlockFS;
+import com.nanosai.streamops.storage.file.StreamStorageFS;
 
 import java.io.File;
 import java.io.IOException;
@@ -33,6 +33,7 @@ public class RecordIterationExample {
 
 
         // attach a RionReader to the byte array
+        //RecordIterator recordIterator= StreamOps.createRecordIterator();
         RecordIterator recordIterator = new RecordIterator();
         recordIterator.setSource(records, 0, bytesRead);
 
