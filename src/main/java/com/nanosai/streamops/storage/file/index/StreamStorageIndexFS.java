@@ -1,4 +1,4 @@
-package com.nanosai.streamops.engine.storage.file.index;
+package com.nanosai.streamops.storage.file.index;
 
 public class StreamStorageIndexFS {
 

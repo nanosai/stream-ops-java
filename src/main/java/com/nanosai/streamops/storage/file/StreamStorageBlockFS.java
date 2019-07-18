@@ -1,4 +1,4 @@
-package com.nanosai.streamops.engine.storage.file;
+package com.nanosai.streamops.storage.file;
 
 public class StreamStorageBlockFS {
 

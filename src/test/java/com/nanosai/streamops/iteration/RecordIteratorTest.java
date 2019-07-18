@@ -1,5 +1,6 @@
-package com.nanosai.streamops.engine;
+package com.nanosai.streamops.iteration;
 
+import com.nanosai.streamops.iteration.RecordIterator;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
