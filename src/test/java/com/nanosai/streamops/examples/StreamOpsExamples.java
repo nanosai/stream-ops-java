@@ -15,5 +15,8 @@ public class StreamOpsExamples {
                 streamStorageFactory.createStreamStorageRootFs("data/test-root2");
 
         streamStorageRootFs.createStreamStorage("test-stream-1");
+
+
+
     }
 }

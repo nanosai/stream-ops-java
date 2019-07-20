@@ -96,6 +96,9 @@ public class StreamStorageFS {
 
     protected void syncFromDisk() throws IOException {
         File rootDir = new File(this.rootDirPath);
+        if(!rootDir.exists()){
+            rootDir.mkdirs();
+        }
         File[] files = rootDir.listFiles();
         for(File file : files) {
             String fileName = file.getName();
