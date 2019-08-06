@@ -1,9 +1,13 @@
 package com.nanosai.streamops.storage.file;
 
+import com.nanosai.streamops.navigation.RecordIterator;
 import com.nanosai.streamops.rion.RionUtil;
+import com.nanosai.streamops.util.HexUtil;
 
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 public class StreamStorageFS {
@@ -60,39 +64,10 @@ public class StreamStorageFS {
     }
 
     protected String createNewStreamBlockFileName() {
-        return this.streamId + "-" + toHex(nextRecordOffset);
+        return this.streamId + "-" + HexUtil.toHex(nextRecordOffset);
     }
 
-    protected static String toHex(long offset) {
-        StringBuilder builder = new StringBuilder();
 
-        for(int i=60; i >= 0; i-=4){
-            char digitChar='0';
-            long digit = offset >> i;
-            digit &= 0xF;
-            switch((int) digit) {
-                case 0 : digitChar = '0'; break;
-                case 1 : digitChar = '1'; break;
-                case 2 : digitChar = '2'; break;
-                case 3 : digitChar = '3'; break;
-                case 4 : digitChar = '4'; break;
-                case 5 : digitChar = '5'; break;
-                case 6 : digitChar = '6'; break;
-                case 7 : digitChar = '7'; break;
-                case 8 : digitChar = '8'; break;
-                case 9 : digitChar = '9'; break;
-                case 10 : digitChar = 'A'; break;
-                case 11 : digitChar = 'B'; break;
-                case 12 : digitChar = 'C'; break;
-                case 13 : digitChar = 'D'; break;
-                case 14 : digitChar = 'E'; break;
-                case 15 : digitChar = 'F'; break;
-            }
-            builder.append(digitChar);
-        }
-
-        return builder.toString();
-    }
 
     protected void syncFromDisk() throws IOException {
         File rootDir = new File(this.rootDirPath);
@@ -102,13 +77,40 @@ public class StreamStorageFS {
         File[] files = rootDir.listFiles();
         for(File file : files) {
             String fileName = file.getName();
-            long firstOffset = Long.parseLong(fileName.substring(fileName.lastIndexOf("-") + 1, fileName.length()));
+            //long firstOffset = Long.parseLong(fileName.substring(fileName.lastIndexOf("-") + 1, fileName.length()));
+            long firstOffset = HexUtil.fromHex(fileName.substring(fileName.lastIndexOf("-") + 1, fileName.length()));
             long fileLength  = file.length();
             StreamStorageBlockFS fileStorageBlock = new StreamStorageBlockFS(file.getName(),fileLength, firstOffset);
             this.storageBlocks.add(fileStorageBlock);
         }
+
+        Collections.sort(this.storageBlocks, new Comparator<StreamStorageBlockFS>() {
+            @Override
+            public int compare(StreamStorageBlockFS block0, StreamStorageBlockFS block1) {
+                if (block0.getFirstOffset() < block1.getFirstOffset()) {
+                    return -1;
+                }
+                if (block0.getFirstOffset() > block1.getFirstOffset()) {
+                    return 1;
+                }
+                return 0;
+            }
+        });
+
         if(this.storageBlocks.size() > 0) {
             this.latestBlock = storageBlocks.get(storageBlocks.size()-1);
+            //todo find latest offset in that storage block, and set nextRecordOffset to that latest offset + 1
+            byte[] latestBlockBytes = new byte[(int) this.latestBlock.getFileLength()];
+            readBytes(this.latestBlock, 0, latestBlockBytes, 0, latestBlockBytes.length);
+
+            RecordIterator recordIterator = new RecordIterator();
+            recordIterator.setSource(latestBlockBytes, 0, latestBlockBytes.length);
+
+            while(recordIterator.hasNext()){
+                recordIterator.next();
+            }
+            this.nextRecordOffset = recordIterator.offset + 1;
+
         } else {
             this.latestBlock = new StreamStorageBlockFS(createNewStreamBlockFileName(), 0, 0);
             openForAppend();
@@ -120,7 +122,8 @@ public class StreamStorageFS {
     }
 
     public void openForAppend() throws FileNotFoundException {
-        this.latestBlockOutputStream = new FileOutputStream(this.rootDirPath + "/" + this.latestBlock.getFileName(), true);
+        String latestBlockFilePath = this.rootDirPath + "/" + this.latestBlock.getFileName();
+        this.latestBlockOutputStream = new FileOutputStream(latestBlockFilePath, true);
     }
 
     public void incNextRecordOffset() {

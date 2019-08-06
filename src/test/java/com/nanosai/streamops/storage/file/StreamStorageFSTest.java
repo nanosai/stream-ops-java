@@ -1,5 +1,6 @@
 package com.nanosai.streamops.storage.file;
 
+import com.nanosai.streamops.util.HexUtil;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
@@ -171,9 +172,9 @@ public class StreamStorageFSTest {
 
     @Test
     public void testToHex() {
-        assertEquals("0000000000000000", StreamStorageFS.toHex(0x0));
-        assertEquals("000000000000000F", StreamStorageFS.toHex(0xF));
-        assertEquals("00000000000000FF", StreamStorageFS.toHex(0xFF));
-        assertEquals("FEDCBA9876543210", StreamStorageFS.toHex(0xFEDCBA9876543210L));
+        assertEquals("0000000000000000", HexUtil.toHex(0x0));
+        assertEquals("000000000000000F", HexUtil.toHex(0xF));
+        assertEquals("00000000000000FF", HexUtil.toHex(0xFF));
+        assertEquals("FEDCBA9876543210", HexUtil.toHex(0xFEDCBA9876543210L));
     }
 }

@@ -1,4 +1,4 @@
-package com.nanosai.streamops.iteration;
+package com.nanosai.streamops.navigation;
 
 import com.nanosai.rionops.rion.RionFieldTypes;
 import com.nanosai.rionops.rion.read.RionReader;
@@ -12,6 +12,11 @@ public class RecordIterator {
 
     public RecordIterator setSource(byte[] source, int sourceOffset, int sourceLength){
         this.rionReader.setSource(source, sourceOffset, sourceLength);
+        return this;
+    }
+
+    public RecordIterator resetSource(int sourceOffset, int sourceLength){
+        this.rionReader.setSource(this.rionReader.source, sourceOffset, sourceLength);
         return this;
     }
 

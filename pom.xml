@@ -6,7 +6,7 @@
 
     <groupId>com.nanosai</groupId>
     <artifactId>stream-ops</artifactId>
-    <version>0.5.2</version>
+    <version>0.5.3</version>
     <packaging>jar</packaging>
 
     <name>Stream Ops for Java</name>

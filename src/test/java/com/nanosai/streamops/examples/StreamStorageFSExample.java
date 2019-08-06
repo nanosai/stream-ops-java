@@ -1,11 +1,10 @@
 package com.nanosai.streamops.examples;
 
-import com.nanosai.streamops.iteration.RecordIterator;
+import com.nanosai.streamops.navigation.RecordIterator;
 import com.nanosai.streamops.storage.file.StreamStorageBlockFS;
 import com.nanosai.streamops.storage.file.StreamStorageFS;
 import com.nanosai.streamops.util.FileUtil;
 
-import java.io.File;
 import java.io.IOException;
 
 public class StreamStorageFSExample {
@@ -13,6 +12,8 @@ public class StreamStorageFSExample {
     public static void main(String[] args) throws IOException {
         FileUtil.deleteDir("data/stream-id");
 
+        //StreamStorageFactory streamStorageFactory = StreamOps.createStreamStorageFactory();
+        //StreamStorageFS streamStorageFS = streamStorageFactory.createStreamStorageFS("stream-id", "data/stream-id");
         StreamStorageFS streamStorageFS = new StreamStorageFS("stream-id", "data/stream-id");
 
         writeRecordsToStream(streamStorageFS);

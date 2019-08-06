@@ -1,7 +1,6 @@
 package com.nanosai.streamops.examples;
 
-import com.nanosai.streamops.StreamOps;
-import com.nanosai.streamops.iteration.RecordIterator;
+import com.nanosai.streamops.navigation.RecordIterator;
 import com.nanosai.streamops.storage.file.StreamStorageBlockFS;
 import com.nanosai.streamops.storage.file.StreamStorageFS;
 

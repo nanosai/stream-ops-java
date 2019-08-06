@@ -1,6 +1,6 @@
 package com.nanosai.streamops;
 
-import com.nanosai.streamops.iteration.RecordIterator;
+import com.nanosai.streamops.navigation.RecordIterator;
 import com.nanosai.streamops.storage.StreamStorageFactory;
 
 public class StreamOps {
