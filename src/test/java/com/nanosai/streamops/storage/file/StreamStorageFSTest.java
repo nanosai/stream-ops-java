@@ -75,7 +75,7 @@ public class StreamStorageFSTest {
 
         byte[] dest1 = new byte[14];
 
-        int bytesRead1 = streamStorageFS.readBytes(
+        int bytesRead1 = streamStorageFS.readFromBlock(
                 streamStorageFS.getStorageBlocks().get(0), 0, dest1, 0, 14);
 
         assertEquals(14, bytesRead1);
@@ -99,7 +99,7 @@ public class StreamStorageFSTest {
 
         byte[] dest2 = new byte[20];
 
-        int bytesRead2 = streamStorageFS.readBytes(
+        int bytesRead2 = streamStorageFS.readFromBlock(
                 streamStorageFS.getStorageBlocks().get(1), 0, dest2, 0, 20);
 
         assertEquals(20, bytesRead2);
@@ -131,7 +131,7 @@ public class StreamStorageFSTest {
 
         byte[] dest3 = new byte[10];
 
-        int bytesRead3 = streamStorageFS.readBytes(
+        int bytesRead3 = streamStorageFS.readFromBlock(
                 streamStorageFS.getStorageBlocks().get(2), 0, dest3, 0, 10);
 
         assertEquals(10, bytesRead3);

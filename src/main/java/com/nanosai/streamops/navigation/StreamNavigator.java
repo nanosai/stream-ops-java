@@ -5,20 +5,18 @@ import com.nanosai.streamops.storage.file.StreamStorageBlockFS;
 import com.nanosai.streamops.storage.file.StreamStorageFS;
 
 import java.io.IOException;
-import java.util.List;
 
 public class StreamNavigator {
 
 
     public void navigateTo(StreamStorageFS streamStorageFS, long toOffset, RecordIterator iterator){
 
-        //0. check if the requested start offset even exists in the stream
-        if(toOffset >= streamStorageFS.nextRecordOffset){
-            return; //No, it doesn't - nothing to iterate to.
-        }
-
         // 1. Find the correct block file.
-        StreamStorageBlockFS closestStorageBlock = findClosestStorageBlock(streamStorageFS, toOffset);
+        StreamStorageBlockFS closestStorageBlock = streamStorageFS.getStorageBlockContainingOffset(toOffset);
+        if(closestStorageBlock == null){
+            //no storage block contains the request toOffset - stop navigation attempt.
+            return;
+        }
 
         System.out.println(closestStorageBlock.getFileName());
 
@@ -31,7 +29,7 @@ public class StreamNavigator {
         }
         int bytesRead = 0;
         try {
-            bytesRead = streamStorageFS.readBytes(closestStorageBlock, 0, iterator.getRionReader().source, 0, (int) closestStorageBlock.getFileLength());
+            bytesRead = streamStorageFS.readFromBlock(closestStorageBlock, 0, iterator.getRionReader().source, 0, (int) closestStorageBlock.getFileLength());
         } catch (IOException e) {
             throw new StreamOpsException("Error reading stream block file [" + closestStorageBlock.getFileName() + "]: "
                     + e.getMessage(), e);
@@ -48,6 +46,7 @@ public class StreamNavigator {
 
     }
 
+    /*
     protected StreamStorageBlockFS findClosestStorageBlock(StreamStorageFS streamStorageFS, long toOffset) {
         List<StreamStorageBlockFS> storageBlocks = streamStorageFS.getStorageBlocks();
         StreamStorageBlockFS closestStorageBlock = null;
@@ -61,5 +60,7 @@ public class StreamNavigator {
         }
         return closestStorageBlock;
     }
+
+    */
 
 }

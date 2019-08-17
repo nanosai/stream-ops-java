@@ -3,6 +3,7 @@ package com.nanosai.streamops.examples;
 import com.nanosai.streamops.navigation.RecordIterator;
 import com.nanosai.streamops.storage.file.StreamStorageBlockFS;
 import com.nanosai.streamops.storage.file.StreamStorageFS;
+import com.nanosai.streamops.util.FileUtil;
 
 import java.io.File;
 import java.io.IOException;
@@ -12,7 +13,7 @@ public class RecordIterationExample {
 
     public static void main(String[] args) throws IOException {
 
-        initStreamDir("data/example-stream-1");
+        FileUtil.resetDir(new File("data/example-stream-1"));
 
         // write some records to a stream
         byte[] rionBytesRecord1 = new byte[]{0x01, 0x08, 0,1,2,3,4,5,6,7}; //10 bytes in total, 8 bytes in the RION Bytes field body
@@ -28,7 +29,7 @@ public class RecordIterationExample {
 
         long fileLength = streamStorageBlockFS.getFileLength();
 
-        int bytesRead = streamStorageFS.readBytes(streamStorageBlockFS, 0, records, 0,  (int) fileLength);
+        int bytesRead = streamStorageFS.readFromBlock(streamStorageBlockFS, 0, records, 0,  (int) fileLength);
 
 
         // attach a RionReader to the byte array
@@ -53,18 +54,5 @@ public class RecordIterationExample {
         streamStorageFS.closeForAppend();
     }
 
-    private static void initStreamDir(String streamRootDirPath) {
-        deleteDir(streamRootDirPath);
-        new File(streamRootDirPath).mkdirs();
-    }
 
-    private static void deleteDir(String dirPath) {
-        File streamRootDir = new File(dirPath);
-        if(streamRootDir.exists()) {
-            for(File file : streamRootDir.listFiles()){
-                file.delete();
-            }
-            streamRootDir.delete();
-        }
-    }
 }

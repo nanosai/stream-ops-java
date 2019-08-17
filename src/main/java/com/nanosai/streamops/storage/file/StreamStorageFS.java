@@ -2,6 +2,7 @@ package com.nanosai.streamops.storage.file;
 
 import com.nanosai.streamops.navigation.RecordIterator;
 import com.nanosai.streamops.rion.RionUtil;
+import com.nanosai.streamops.rion.StreamOpsRionFieldTypes;
 import com.nanosai.streamops.util.HexUtil;
 
 import java.io.*;
@@ -12,7 +13,7 @@ import java.util.List;
 
 public class StreamStorageFS {
 
-    public  static final int OFFSET_EXTENDED_RION_TYPE = 1;
+    //public  static final int OFFSET_EXTENDED_RION_TYPE = 1;
 
     private String streamId    = null;
     private String rootDirPath = null;
@@ -63,6 +64,26 @@ public class StreamStorageFS {
         return storageBlocks;
     }
 
+    public StreamStorageBlockFS getStorageBlockContainingOffset(long offset) {
+        //0. check if the requested start offset even exists in the stream
+        if(offset >= nextRecordOffset){
+            return null; //No, it doesn't - nothing to iterate to.
+        }
+
+        List<StreamStorageBlockFS> storageBlocks = this.storageBlocks;
+        StreamStorageBlockFS closestStorageBlock = null;
+        for(int i=0; i<storageBlocks.size(); i++){
+            StreamStorageBlockFS storageBlock = storageBlocks.get(i);
+            if(storageBlock.getFirstOffset() <= offset){
+                closestStorageBlock = storageBlock;
+            } else {
+                break;
+            }
+        }
+        return closestStorageBlock;
+
+    }
+
     protected String createNewStreamBlockFileName() {
         return this.streamId + "-" + HexUtil.toHex(nextRecordOffset);
     }
@@ -101,7 +122,7 @@ public class StreamStorageFS {
             this.latestBlock = storageBlocks.get(storageBlocks.size()-1);
             //todo find latest offset in that storage block, and set nextRecordOffset to that latest offset + 1
             byte[] latestBlockBytes = new byte[(int) this.latestBlock.getFileLength()];
-            readBytes(this.latestBlock, 0, latestBlockBytes, 0, latestBlockBytes.length);
+            readFromBlock(this.latestBlock, 0, latestBlockBytes, 0, latestBlockBytes.length);
 
             RecordIterator recordIterator = new RecordIterator();
             recordIterator.setSource(latestBlockBytes, 0, latestBlockBytes.length);
@@ -133,7 +154,7 @@ public class StreamStorageFS {
     public void appendOffset() throws IOException {
         int lengthOfOffset = (255 & RionUtil.lengthOfInt64Value(this.nextRecordOffset));
         byte rionExtendedFieldLeadByte = (byte) ((255 & (15 << 4)) | lengthOfOffset);
-        byte rionStreamOffsetType      = (byte) OFFSET_EXTENDED_RION_TYPE;
+        byte rionStreamOffsetType      = (byte) StreamOpsRionFieldTypes.OFFSET_EXTENDED_RION_TYPE;
 
         this.offsetRionBuffer[0] = rionExtendedFieldLeadByte;
         this.offsetRionBuffer[1] = rionStreamOffsetType;
@@ -171,13 +192,31 @@ public class StreamStorageFS {
     }
 
 
-    public int readBytes(StreamStorageBlockFS streamStorageBlockFS, long fromByte, byte[] dest, int destOffset, int length) throws IOException {
+    public int readFromBlock(StreamStorageBlockFS streamStorageBlockFS, long fromByteOffset, byte[] dest, int destOffset, int length) throws IOException {
 
         try(RandomAccessFile randomAccessFile = new RandomAccessFile(this.rootDirPath + "/" + streamStorageBlockFS.getFileName(), "r")){
-            randomAccessFile.seek(fromByte);
+            randomAccessFile.seek(fromByteOffset);
 
             return  randomAccessFile.read(dest, destOffset, length);
         }
+    }
+
+    public int readFromBlockWithIndex(int streamStorageBlockIndex, long fromByteOffset, byte[] dest, int destOffset, int length) throws IOException {
+        if(streamStorageBlockIndex >= this.storageBlocks.size()){
+            return 0;
+        }
+
+        return readFromBlock(this.storageBlocks.get(streamStorageBlockIndex), fromByteOffset, dest, destOffset, length);
+    }
+
+    public int readFromBlockContainingOffset(long recordOffset, long fromByteOffset, byte[] dest, int destOffset, int length) throws IOException {
+
+        StreamStorageBlockFS storageBlockContainingOffset = getStorageBlockContainingOffset(recordOffset);
+        if(storageBlockContainingOffset == null){
+            return 0;
+        }
+
+        return readFromBlock(storageBlockContainingOffset, fromByteOffset, dest, destOffset, length);
     }
 
 

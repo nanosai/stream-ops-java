@@ -22,4 +22,12 @@ public class FileUtil {
         }
         return dir.delete();
     }
+
+    public static boolean resetDir(File dir){
+        if(!deleteDir(dir)){
+            return false;
+        }
+        return dir.mkdirs();
+
+    }
 }

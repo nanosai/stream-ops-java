@@ -26,7 +26,7 @@ public class StreamStorageFSExample {
 
         StreamStorageBlockFS streamStorageBlockFS = streamStorageFS.getStorageBlocks().get(0);
 
-        int lengthRead = streamStorageFS.readBytes(streamStorageBlockFS, 0,
+        int lengthRead = streamStorageFS.readFromBlock(streamStorageBlockFS, 0,
                 recordBuffer, 0, (int) streamStorageBlockFS.getFileLength());
 
         RecordIterator recordIterator = new RecordIterator();

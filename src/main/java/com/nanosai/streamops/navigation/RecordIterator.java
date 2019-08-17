@@ -2,6 +2,7 @@ package com.nanosai.streamops.navigation;
 
 import com.nanosai.rionops.rion.RionFieldTypes;
 import com.nanosai.rionops.rion.read.RionReader;
+import com.nanosai.streamops.rion.StreamOpsRionFieldTypes;
 import com.nanosai.streamops.storage.file.StreamStorageFS;
 
 public class RecordIterator {
@@ -33,7 +34,7 @@ public class RecordIterator {
         this.offset++;
 
         while(this.rionReader.fieldType         == RionFieldTypes.EXTENDED &&
-              this.rionReader.fieldTypeExtended == StreamStorageFS.OFFSET_EXTENDED_RION_TYPE){
+              this.rionReader.fieldTypeExtended == StreamOpsRionFieldTypes.OFFSET_EXTENDED_RION_TYPE){
 
             //read offset value of extended field as long
             this.offset = this.rionReader.readInt64();
