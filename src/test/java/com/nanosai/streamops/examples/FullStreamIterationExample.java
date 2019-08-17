@@ -2,6 +2,7 @@ package com.nanosai.streamops.examples;
 
 import com.nanosai.rionops.rion.RionFieldTypes;
 import com.nanosai.rionops.rion.read.RionReader;
+import com.nanosai.rionops.rion.write.RionWriter;
 import com.nanosai.streamops.rion.StreamOpsRionFieldTypes;
 import com.nanosai.streamops.storage.file.StreamStorageFS;
 import com.nanosai.streamops.util.FileUtil;
@@ -16,10 +17,21 @@ public class FullStreamIterationExample {
         String streamDir = "data/" + streamId;
         FileUtil.resetDir(new File(streamDir));
 
-        byte[] rionBytesRecord1 = new byte[]{0x01, 0x08, 0,1,2,3,4,5,6,7}; //10 bytes in total, 8 bytes in the RION Bytes field body
+        byte[] rionRecord = new byte[1024];
+        RionWriter rionWriter = new RionWriter()
+                .setNestedFieldStack(new int[16])
+                .setDestination(rionRecord,0);
+
+        rionWriter.writeObjectBeginPush(2);
+        rionWriter.writeUtf8("Value1");
+        rionWriter.writeUtf8("Value2");
+        //rionWriter.writeUtf8("Value3");
+        rionWriter.writeObjectEndPop();
+
+        //byte[] rionBytesRecord1 = new byte[]{0x01, 0x08, 0,1,2,3,4,5,6,7}; //10 bytes in total, 8 bytes in the RION Bytes field body
 
         StreamStorageFS streamStorage = new StreamStorageFS(streamId, streamDir, 1024);
-        appendRecordsToStream(rionBytesRecord1, streamStorage);
+        appendRecordsToStream(rionRecord, rionWriter.index, streamStorage);
 
 
         byte[] recordBuffer = new byte[(int) streamStorage.getStorageFileBlockMaxSize()];
@@ -42,6 +54,13 @@ public class FullStreamIterationExample {
                     //this is a record field - read record value
                     System.out.println("[" + recordOffset + "][" + rionReader.fieldType +"]["+rionReader.fieldLength +"]");
 
+                    rionReader.moveInto();
+                    while(rionReader.hasNext()){
+                        rionReader.nextParse();
+                        System.out.println("   [" + recordOffset + "][" + rionReader.fieldType +"]["+ rionReader.readUtf8String() +"]");
+                    }
+                    rionReader.moveOutOf();
+
                     //after processing this record, increment recordOffset for next record - in case no explicit record offset field is found
                     recordOffset++;
                 }
@@ -51,17 +70,17 @@ public class FullStreamIterationExample {
 
     }
 
-    private static void appendRecordsToStream(byte[] rionBytesRecord1, StreamStorageFS streamStorageFS) throws IOException {
+    private static void appendRecordsToStream(byte[] rionBytesRecord1, int length, StreamStorageFS streamStorageFS) throws IOException {
         streamStorageFS.openForAppend();
-        streamStorageFS.appendRecord(rionBytesRecord1, 0, rionBytesRecord1.length);
-        streamStorageFS.appendRecord(rionBytesRecord1, 0, rionBytesRecord1.length);
-        streamStorageFS.appendRecord(rionBytesRecord1, 0, rionBytesRecord1.length);
+        streamStorageFS.appendRecord(rionBytesRecord1, 0, length);
+        streamStorageFS.appendRecord(rionBytesRecord1, 0, length);
+        streamStorageFS.appendRecord(rionBytesRecord1, 0, length);
 
         streamStorageFS.nextRecordOffset += 10;
         streamStorageFS.appendOffset();
-        streamStorageFS.appendRecord(rionBytesRecord1, 0, rionBytesRecord1.length);
-        streamStorageFS.appendRecord(rionBytesRecord1, 0, rionBytesRecord1.length);
-        streamStorageFS.appendRecord(rionBytesRecord1, 0, rionBytesRecord1.length);
+        streamStorageFS.appendRecord(rionBytesRecord1, 0, length);
+        streamStorageFS.appendRecord(rionBytesRecord1, 0, length);
+        streamStorageFS.appendRecord(rionBytesRecord1, 0, length);
 
 
         streamStorageFS.closeForAppend();
