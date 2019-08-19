@@ -11,7 +11,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.GregorianCalendar;
 
-public class FullStreamIterationExample {
+public class FullInternalStreamIterationExample {
 
     public static void main(String[] args) throws IOException {
         String streamId  = "full-stream-iteration-example-1";
@@ -44,42 +44,23 @@ public class FullStreamIterationExample {
 
 
         byte[] recordBuffer = new byte[(int) streamStorage.getStorageFileBlockMaxSize()];
-        RionReader rionReader = new RionReader();
-        long recordOffset = 0;
 
-        for(int i=0, n = streamStorage.getStorageBlocks().size(); i<n; i++){
-            int lengthRead = streamStorage.readFromBlockWithIndex(i,0, recordBuffer, 0, recordBuffer.length);
+        streamStorage.iterate(recordBuffer, (recordOffset, rionReader) -> {
+            System.out.println("[" + recordOffset + "][" + rionReader.fieldType +"]["+rionReader.fieldLength +"]");
 
-            rionReader.setSource(recordBuffer, 0, lengthRead);
-
+            rionReader.moveInto();
             while(rionReader.hasNext()){
                 rionReader.nextParse();
-
-                if(rionReader.fieldType         == RionFieldTypes.EXTENDED &&
-                   rionReader.fieldTypeExtended == StreamOpsRionFieldTypes.OFFSET_EXTENDED_RION_TYPE){
-                    //this is a record offset field - read record offset value
-                    recordOffset = rionReader.readInt64();
-                } else {
-                    //this is a record field - read record value
-                    System.out.println("[" + recordOffset + "][" + rionReader.fieldType +"]["+rionReader.fieldLength +"]");
-
-                    rionReader.moveInto();
-                    while(rionReader.hasNext()){
-                        rionReader.nextParse();
-                        if(rionReader.fieldType == RionFieldTypes.UTF_8) {
-                            System.out.println("   [" + recordOffset + "][" + rionReader.fieldType + "][" + rionReader.readUtf8String() + "]");
-                        } else if (rionReader.fieldType == RionFieldTypes.INT_POS){
-                            System.out.println("   [" + recordOffset + "][" + rionReader.fieldType + "][" + rionReader.readInt64() + "]");
-                        }
-                    }
-                    rionReader.moveOutOf();
-
-                    //after processing this record, increment recordOffset for next record - in case no explicit record offset field is found
-                    recordOffset++;
+                if(rionReader.fieldType == RionFieldTypes.UTF_8) {
+                    System.out.println("   [" + recordOffset + "][" + rionReader.fieldType + "][" + rionReader.readUtf8String() + "]");
+                } else if (rionReader.fieldType == RionFieldTypes.INT_POS){
+                    System.out.println("   [" + recordOffset + "][" + rionReader.fieldType + "][" + rionReader.readInt64() + "]");
                 }
             }
+            rionReader.moveOutOf();
 
-        }
+            return true;
+        });
 
     }
 
@@ -94,7 +75,6 @@ public class FullStreamIterationExample {
         streamStorageFS.appendRecord(rionBytesRecord1, 0, length);
         streamStorageFS.appendRecord(rionBytesRecord1, 0, length);
         streamStorageFS.appendRecord(rionBytesRecord1, 0, length);
-
 
         streamStorageFS.closeForAppend();
     }
