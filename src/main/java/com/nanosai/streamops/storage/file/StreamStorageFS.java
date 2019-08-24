@@ -1,5 +1,7 @@
 package com.nanosai.streamops.storage.file;
 
+import com.nanosai.rionops.rion.RionFieldTypes;
+import com.nanosai.rionops.rion.read.RionReader;
 import com.nanosai.streamops.navigation.RecordIterator;
 import com.nanosai.streamops.rion.RionUtil;
 import com.nanosai.streamops.rion.StreamOpsRionFieldTypes;
@@ -152,8 +154,10 @@ public class StreamStorageFS {
     }
 
     public void appendOffset() throws IOException {
-        int lengthOfOffset = (255 & RionUtil.lengthOfInt64Value(this.nextRecordOffset));
-        byte rionExtendedFieldLeadByte = (byte) ((255 & (15 << 4)) | lengthOfOffset);
+        int lengthOfOffset         = (255 & RionUtil.lengthOfInt64Value(this.nextRecordOffset));
+        int lengthOfLengthOfOffset = (255 & RionUtil.lengthOfInt64Value(lengthOfOffset));
+
+        byte rionExtendedFieldLeadByte = (byte) ((255 & (15 << 4)) | lengthOfLengthOfOffset);
         byte rionStreamOffsetType      = (byte) StreamOpsRionFieldTypes.OFFSET_EXTENDED_RION_TYPE;
 
         this.offsetRionBuffer[0] = rionExtendedFieldLeadByte;
@@ -221,6 +225,38 @@ public class StreamStorageFS {
 
 
 
+    public void iterate(byte[] recordBuffer, IRecordProcessor recordProcessor) throws IOException {
+
+        RionReader rionReader = new RionReader();
+        long recordOffset = 0;
+
+        for(int i=0, n = getStorageBlocks().size(); i<n; i++){
+            int lengthRead = readFromBlockWithIndex(i,0, recordBuffer, 0, recordBuffer.length);
+
+            rionReader.setSource(recordBuffer, 0, lengthRead);
+
+            while(rionReader.hasNext()){
+                rionReader.nextParse();
+
+                if(rionReader.fieldType         == RionFieldTypes.EXTENDED &&
+                        rionReader.fieldTypeExtended == StreamOpsRionFieldTypes.OFFSET_EXTENDED_RION_TYPE){
+                    //this is a record offset field - read record offset value as int 64 (Java long)
+                    recordOffset = rionReader.readInt64();
+                } else {
+                    //this is a record field - read record value
+                    boolean continueIteration = recordProcessor.process(recordOffset, rionReader);
+                    if(!continueIteration) {
+                        return;
+                    }
+
+                    //after processing this record, increment recordOffset for next record - in case no explicit record offset field is found
+                    recordOffset++;
+                }
+            }
+
+        }
+
+    }
 
     public static class ReadResult {
         public int  firstRecordByteOffset;   // byte offset into block of bytes where first record with requested offset starts.
