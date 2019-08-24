@@ -154,8 +154,10 @@ public class StreamStorageFS {
     }
 
     public void appendOffset() throws IOException {
-        int lengthOfOffset = (255 & RionUtil.lengthOfInt64Value(this.nextRecordOffset));
-        byte rionExtendedFieldLeadByte = (byte) ((255 & (15 << 4)) | lengthOfOffset);
+        int lengthOfOffset         = (255 & RionUtil.lengthOfInt64Value(this.nextRecordOffset));
+        int lengthOfLengthOfOffset = (255 & RionUtil.lengthOfInt64Value(lengthOfOffset));
+
+        byte rionExtendedFieldLeadByte = (byte) ((255 & (15 << 4)) | lengthOfLengthOfOffset);
         byte rionStreamOffsetType      = (byte) StreamOpsRionFieldTypes.OFFSET_EXTENDED_RION_TYPE;
 
         this.offsetRionBuffer[0] = rionExtendedFieldLeadByte;
