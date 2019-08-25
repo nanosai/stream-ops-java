@@ -23,9 +23,9 @@ public class ECommerceStreamIterationExample {
         streamStorage.openForAppend();
 
         List<Product> products = new ArrayList<>();
-        products.add(new Product(0, "Soda", "Cold softdrink", 100, 50));
-        products.add(new Product(1, "Choc", "Chocolate bar", 90, 47));
-        products.add(new Product(2, "Chip", "Potatoe chips", 150, 83));
+        products.add(new Product(0, "Soda ", "Cold softdrink", 100, 50));
+        products.add(new Product(1, "Choc ", "Chocolate bar", 90, 47));
+        products.add(new Product(2, "Chips", "Potatoe chips", 150, 83));
 
         List<Customer> customers = new ArrayList<>();
         customers.add(new Customer(0, "John Doe"));
@@ -47,7 +47,7 @@ public class ECommerceStreamIterationExample {
             rionWriter.setDestination(rionRecord, 0);
             //create an order item record
             rionWriter.writeObjectBeginPush(2);
-            rionWriter.writeInt64( i);              //orderItemId
+            //rionWriter.writeInt64( i);              //orderItemId
             rionWriter.writeInt64(productId);       //productId
             rionWriter.writeInt64(orderId);         //orderId
             rionWriter.writeInt64(customerId);      //customerId
