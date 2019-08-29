@@ -16,6 +16,7 @@ public class ECommerceReport implements IRecordProcessor {
 
 
     private long totalRevenue = 0;
+    public long recordCount = 0;
 
 
     public ECommerceReport(List<Product> products, List<Customer> customers) {
@@ -30,7 +31,9 @@ public class ECommerceReport implements IRecordProcessor {
     @Override
     public boolean process(long recordOffset, RionReader rionReader) {
 
-        System.out.println("[" + recordOffset + "][" + rionReader.fieldType +"]["+rionReader.fieldLength +"]");
+        //System.out.println("[" + recordOffset + "][" + rionReader.fieldType +"]["+rionReader.fieldLength +"]");
+
+        this.recordCount++;
 
         rionReader.moveInto();
         while(rionReader.hasNext()){
