@@ -1,5 +1,6 @@
 package com.nanosai.streamops.storage.file;
 
+import com.nanosai.streamops.util.FileUtil;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
@@ -20,8 +21,8 @@ public class StreamStorageRootFSTest {
 
     @Test
     public void testCreateStreamFileStorage() throws IOException {
-        new File("data/test-root/stream-1").delete();
-        new File("data/test-root").delete();
+        FileUtil.resetDir(new File("data/test-root/stream-1"));
+        FileUtil.resetDir(new File("data/test-root"));
 
         StreamStorageRootFS streamStorageRootFS = new StreamStorageRootFS("data/test-root");
 
@@ -37,8 +38,8 @@ public class StreamStorageRootFSTest {
 
     @Test
     public void testCreateStreamFileStorageWithMaxBlockSize() throws IOException {
-        new File("data/test-root/stream-1").delete();
-        new File("data/test-root").delete();
+        FileUtil.resetDir(new File("data/test-root/stream-1"));
+        FileUtil.resetDir(new File("data/test-root"));
 
         StreamStorageRootFS streamStorageRootFS = new StreamStorageRootFS("data/test-root");
         assertTrue(new File("data/test-root").exists());

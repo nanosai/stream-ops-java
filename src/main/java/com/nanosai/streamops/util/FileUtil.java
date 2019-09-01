@@ -14,7 +14,7 @@ public class FileUtil {
         if(files != null){
             for(File file : files){
                 if(file.isDirectory()){
-                    deleteDir(dir);
+                    deleteDir(file);
                 } else {
                     file.delete();
                 }
