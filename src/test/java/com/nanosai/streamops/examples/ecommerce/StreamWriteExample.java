@@ -27,7 +27,7 @@ public class StreamWriteExample {
         String streamDir = "data/" + streamId;
         FileUtil.resetDir(new File(streamDir));
 
-        StreamStorageFS streamStorage = new StreamStorageFS(streamId, streamDir, 1024 * 1024);
+        StreamStorageFS streamStorage = new StreamStorageFS(streamId, streamDir, 8 * 1024 * 1024);
         streamStorage.openForAppend();
 
         long noOfOrders = 10;

@@ -1,5 +1,6 @@
 package com.nanosai.streamops.storage.file;
 
+import com.nanosai.streamops.util.FileUtil;
 import com.nanosai.streamops.util.HexUtil;
 import org.junit.jupiter.api.Test;
 
@@ -13,6 +14,7 @@ public class StreamStorageFSTest {
 
     @Test
     public void testCreateNewStreamFileStorage() throws IOException {
+        FileUtil.resetDir(new File("data/test-stream-1"));
         StreamStorageFS streamStorageFS = new StreamStorageFS("test-stream-1", "data/test-stream-1");
 
         assertNotNull(streamStorageFS.getLatestBlock());
@@ -22,6 +24,7 @@ public class StreamStorageFSTest {
 
     @Test
     public void testAppendToStreamFileStorage() throws IOException {
+        FileUtil.resetDir(new File("data/test-stream-1"));
         initStreamDir("data/test-stream-1");
 
         StreamStorageFS streamStorageFS = new StreamStorageFS("test-stream-1", "data/test-stream-1");
@@ -52,6 +55,7 @@ public class StreamStorageFSTest {
 
     @Test
     public void testAppendSplitsIntoMultipleFiles() throws IOException {
+        FileUtil.resetDir(new File("data/test-stream-1"));
         initStreamDir("data/test-stream-1");
 
         StreamStorageFS streamStorageFS = new StreamStorageFS("test-stream-1", "data/test-stream-1", 20);

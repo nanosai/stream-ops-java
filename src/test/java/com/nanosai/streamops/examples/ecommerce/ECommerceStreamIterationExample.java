@@ -28,7 +28,7 @@ public class ECommerceStreamIterationExample {
         String streamId  = "e-commerce-example-2";
         String streamDir = "data/" + streamId;
 
-        StreamStorageFS streamStorage = new StreamStorageFS(streamId, streamDir, 1024 * 1024);
+        StreamStorageFS streamStorage = new StreamStorageFS(streamId, streamDir, 8 * 1024 * 1024);
 
         byte[] recordBuffer = new byte[(int) streamStorage.getStorageFileBlockMaxSize()];
 

@@ -14,6 +14,7 @@ import java.util.Comparator;
 import java.util.List;
 
 public class StreamStorageFS {
+    public static final int OFFSET_FIELD_LEAD_TYPE_LENGTH_BYTES_LENGTH = 3;
 
     //public  static final int OFFSET_EXTENDED_RION_TYPE = 1;
 
@@ -168,8 +169,8 @@ public class StreamStorageFS {
         for(int i=(lengthOfOffset-1)*8; i >= 0; i-=8){
             this.offsetRionBuffer[index++] = (byte) (255 & (this.nextRecordOffset >> i));
         }
-        this.latestBlockOutputStream.write(this.offsetRionBuffer, 0, lengthOfOffset + 3);
-        this.latestBlock.fileLength += lengthOfOffset + 2;
+        this.latestBlockOutputStream.write(this.offsetRionBuffer, 0, lengthOfOffset + OFFSET_FIELD_LEAD_TYPE_LENGTH_BYTES_LENGTH);
+        this.latestBlock.fileLength += lengthOfOffset + OFFSET_FIELD_LEAD_TYPE_LENGTH_BYTES_LENGTH;
     }
 
     public void appendRecord(byte[] source, int sourceOffset, int sourceLength) throws IOException {
