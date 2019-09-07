@@ -36,13 +36,13 @@ public class StreamStorageFSTest {
         streamStorageFS.appendRecord(rionBytesRecord, 0, rionBytesRecord.length);
         streamStorageFS.closeForAppend();
 
-        assertEquals(13, streamStorageFS.getLatestBlock().fileLength);
+        assertEquals(14, streamStorageFS.getLatestBlock().fileLength);
 
         streamStorageFS.openForAppend();
         streamStorageFS.appendRecord(rionBytesRecord, 0, rionBytesRecord.length);
         streamStorageFS.closeForAppend();
 
-        assertEquals(23, streamStorageFS.getLatestBlock().fileLength);
+        assertEquals(24, streamStorageFS.getLatestBlock().fileLength);
 
     }
 
@@ -73,9 +73,9 @@ public class StreamStorageFSTest {
         streamStorageFS.closeForAppend();
 
         assertEquals(3, streamStorageFS.getStorageBlocks().size());
-        assertEquals(13, streamStorageFS.getStorageBlocks().get(0).fileLength);
-        assertEquals(19, streamStorageFS.getStorageBlocks().get(1).fileLength);
-        assertEquals( 9, streamStorageFS.getStorageBlocks().get(2).fileLength);
+        assertEquals(14, streamStorageFS.getStorageBlocks().get(0).fileLength);
+        assertEquals(20, streamStorageFS.getStorageBlocks().get(1).fileLength);
+        assertEquals(10, streamStorageFS.getStorageBlocks().get(2).fileLength);
 
         byte[] dest1 = new byte[14];
 

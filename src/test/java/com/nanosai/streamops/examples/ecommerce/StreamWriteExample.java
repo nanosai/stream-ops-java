@@ -4,7 +4,9 @@ import com.nanosai.rionops.rion.write.RionWriter;
 import com.nanosai.streamops.storage.file.StreamStorageFS;
 import com.nanosai.streamops.util.FileUtil;
 
+import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -28,6 +30,10 @@ public class StreamWriteExample {
         FileUtil.resetDir(new File(streamDir));
 
         StreamStorageFS streamStorage = new StreamStorageFS(streamId, streamDir, 8 * 1024 * 1024);
+        streamStorage.setOutputStreamFactory((String filePath) -> {
+           return new BufferedOutputStream(new FileOutputStream(filePath), 8 * 1024);
+        });
+
         streamStorage.openForAppend();
 
         long noOfOrders = 10;
@@ -69,7 +75,7 @@ public class StreamWriteExample {
         System.out.println("Time   : " + fullTime);
         System.out.println("Records: " + noOfOrderItems);
 
-        System.out.println("Speed  :" + noOfOrderItems * 1000 / fullTime);
+        System.out.println("Speed  :" + noOfOrderItems * 1000L / fullTime);
 
 
     }

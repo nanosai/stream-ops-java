@@ -24,13 +24,14 @@ public class StreamStorageFS {
     private   List<StreamStorageBlockFS> storageBlocks = new ArrayList<>();
 
     private StreamStorageBlockFS latestBlock             = null;
-    private   FileOutputStream   latestBlockOutputStream = null;
+    private OutputStream         latestBlockOutputStream = null;
 
-    private long storageFileBlockMaxSize = 1024 * 1024;
+    private long storageFileBlockMaxSize = 8 * 1024 * 1024;
 
     public long nextRecordOffset = 0;
-
     protected byte[] offsetRionBuffer = new byte[16];
+
+    private IOutputStreamFactory outputStreamFactory = null;
 
     public StreamStorageFS(String streamId, String rootDirPath) throws IOException {
         this.streamId    = streamId;
@@ -45,6 +46,11 @@ public class StreamStorageFS {
         this.storageFileBlockMaxSize = storageFileBlockMaxSize;
 
         syncFromDisk();
+    }
+
+    public StreamStorageFS setOutputStreamFactory(IOutputStreamFactory outputStreamFactory) {
+        this.outputStreamFactory = outputStreamFactory;
+        return this;
     }
 
     public String getStreamId() {
@@ -145,9 +151,12 @@ public class StreamStorageFS {
 
     }
 
-    public void openForAppend() throws FileNotFoundException {
+    public void openForAppend() throws IOException {
         String latestBlockFilePath = this.rootDirPath + "/" + this.latestBlock.getFileName();
-        this.latestBlockOutputStream = new FileOutputStream(latestBlockFilePath, true);
+        this.latestBlockOutputStream =
+                this.outputStreamFactory != null ?
+                        this.outputStreamFactory.createOutputStream(latestBlockFilePath) :
+                        new FileOutputStream(latestBlockFilePath, true);
     }
 
     public void incNextRecordOffset() {
@@ -190,6 +199,11 @@ public class StreamStorageFS {
         this.latestBlockOutputStream.write(source, sourceOffset, sourceLength);
         this.latestBlock.fileLength += sourceLength;
         this.nextRecordOffset++;
+    }
+
+
+    public void flush() throws IOException {
+        this.latestBlockOutputStream.flush();
     }
 
     public void closeForAppend() throws IOException {
