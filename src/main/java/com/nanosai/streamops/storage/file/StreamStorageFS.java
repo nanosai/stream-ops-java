@@ -33,6 +33,8 @@ public class StreamStorageFS {
 
     private IOutputStreamFactory outputStreamFactory = null;
 
+    private IAppendListener appendListener = null;
+
     public StreamStorageFS(String streamId, String rootDirPath) throws IOException {
         this.streamId    = streamId;
         this.rootDirPath = rootDirPath;
@@ -50,6 +52,11 @@ public class StreamStorageFS {
 
     public StreamStorageFS setOutputStreamFactory(IOutputStreamFactory outputStreamFactory) {
         this.outputStreamFactory = outputStreamFactory;
+        return this;
+    }
+
+    public StreamStorageFS setAppendListener(IAppendListener listener){
+        this.appendListener = listener;
         return this;
     }
 
@@ -199,6 +206,11 @@ public class StreamStorageFS {
         this.latestBlockOutputStream.write(source, sourceOffset, sourceLength);
         this.latestBlock.fileLength += sourceLength;
         this.nextRecordOffset++;
+
+        if(this.appendListener != null) {
+            this.appendListener.recordAppended(source, sourceOffset, sourceLength,this.nextRecordOffset - 1);
+        }
+
     }
 
 
