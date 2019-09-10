@@ -19,7 +19,13 @@ We have a Stream Ops tutorial in progress here:
 [http://tutorials.jenkov.com/stream-ops-java/index.html](http://tutorials.jenkov.com/stream-ops-java/index.html)
 
 
+# The 1 Billion Records Per Second Challenge
+We (Nanosai) will try to get Stream Ops to be able to process 1 billion records per second. You can read more about
+that challenge at [https://nanosai.com/1brs-challenge](The 1BRS Challenge).
 
+# License
+The intention is to release Stream Ops under the Apache License 2.0 . We need to discuss this a bit further internally
+in Nanosai, but in any case, it will be something close to that.
 
 
 
