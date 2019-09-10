@@ -28,5 +28,24 @@ The intention is to release Stream Ops under the Apache License 2.0 . We need to
 in Nanosai, but in any case, it will be something close to that.
 
 
+# Dependencies
+Stream Ops depends on these two other Nanosai projects:
 
+[Mem Ops for Java](https://github.com/nanosai/mem-ops-java)
+[ION Ops for Java](https://github.com/nanosai/rion-ops-java)
+
+# Getting Started
+
+We are working on getting all our projects into the Maven central repository. Until that succeeds, the way to
+use Stream Ops is:
+
+
+Clone / forl Stream Ops and both of the dependencies (RION Ops + Mem Ops) and build all three locally
+to get Stream Ops working.
+
+In a near future we will create a Nanosai aggregate repository which will contain all of our distributed systems,
+distributed data and data science related projects in one repository. Then you can fork just one project to
+play with everything! That aggregate repository will get updated with new versions of the individual projects
+as they are released, and we will make sure that all versions play well together in each release of the aggregate
+repository. 
 
