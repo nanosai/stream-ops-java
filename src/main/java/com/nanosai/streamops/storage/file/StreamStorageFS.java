@@ -254,7 +254,7 @@ public class StreamStorageFS {
 
     public void iterate(byte[] recordBuffer, IRecordProcessor recordProcessor) throws IOException {
 
-        RionReader rionReader = new RionReader();
+        RionReader rionReader = new RionReader();  //todo reuse a RionReader instead?
         long recordOffset = 0;
 
         for(int i=0, n = getStorageBlocks().size(); i<n; i++){
@@ -282,8 +282,62 @@ public class StreamStorageFS {
             }
 
         }
+    }
+
+    public void iterateFromOffset(byte[] recordBuffer, long fromOffset, IRecordProcessor recordProcessor ) throws IOException {
+        if(fromOffset >= this.nextRecordOffset){
+            return; // no records from given fromOffset
+        }
+
+        //find block file containing fromOffset
+        int blockIndex = 0;
+        int noOfBlocks = this.storageBlocks.size();
+        while(blockIndex < noOfBlocks && fromOffset > this.storageBlocks.get(blockIndex).getFirstOffset()){
+            blockIndex++;
+        }
+        blockIndex--;
+
+
+        RionReader rionReader = new RionReader();  //todo reuse a RionReader instead?
+        long recordOffset = 0;
+
+        for(int i=0, n = getStorageBlocks().size(); i<n; i++){
+            int lengthRead = readFromBlockWithIndex(i,0, recordBuffer, 0, recordBuffer.length);
+
+            rionReader.setSource(recordBuffer, 0, lengthRead);
+
+            while(rionReader.hasNext()){
+                rionReader.nextParse();
+
+                if(rionReader.fieldType         == RionFieldTypes.EXTENDED &&
+                        rionReader.fieldTypeExtended == StreamOpsRionFieldTypes.OFFSET_EXTENDED_RION_TYPE){
+                    //this is a record offset field - read record offset value as int 64 (Java long)
+                    recordOffset = rionReader.readInt64();
+                } else {
+                    //this is a record field - read record value
+                    if(recordOffset >= fromOffset) {
+                        boolean continueIteration = recordProcessor.process(recordOffset, rionReader);
+                        if(!continueIteration) {
+                            return;
+                        }
+                    }
+
+                    //after processing this record, increment recordOffset for next record - in case no explicit record offset field is found
+                    recordOffset++;
+                }
+            }
+
+        }
+
+
+
+
 
     }
+
+
+
+
 
     public static class ReadResult {
         public int  firstRecordByteOffset;   // byte offset into block of bytes where first record with requested offset starts.
