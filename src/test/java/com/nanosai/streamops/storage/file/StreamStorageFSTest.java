@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicLong;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -66,12 +67,6 @@ public class StreamStorageFSTest {
 
         streamStorageFS.closeForAppend();
 
-    }
-
-
-    @Test
-    public void testNop() {
-        System.out.println("Doing nothing");
     }
 
 
@@ -174,6 +169,41 @@ public class StreamStorageFSTest {
         assertEquals(0x02, 255 & dest3[7]); // length byte of RION Bytes field. Total length of RION Bytes field body is 8 bytes
         assertEquals(0x04, 255 & dest3[8]); // length byte of RION Bytes field. Total length of RION Bytes field body is 8 bytes
         assertEquals(0x06, 255 & dest3[9]); // length byte of RION Bytes field. Total length of RION Bytes field body is 8 bytes
+
+    }
+
+
+    @Test
+    public void testIterateFrom() throws IOException {
+        FileUtil.resetDir(new File("data/test-stream-1"));
+        StreamStorageFS streamStorageFS = new StreamStorageFS("test-stream-1", "data/test-stream-1", 34);
+
+        byte[] rionBytesRecord1 = new byte[]{0x01, 0x08, 0,1,2,3,4,5,6,7}; //10 bytes in total, 8 bytes in the RION Bytes field body
+
+        streamStorageFS.openForAppend();
+        streamStorageFS.appendRecord(rionBytesRecord1, 0, rionBytesRecord1.length);
+        streamStorageFS.appendRecord(rionBytesRecord1, 0, rionBytesRecord1.length);
+        streamStorageFS.appendRecord(rionBytesRecord1, 0, rionBytesRecord1.length);
+        streamStorageFS.appendRecord(rionBytesRecord1, 0, rionBytesRecord1.length);
+        streamStorageFS.appendRecord(rionBytesRecord1, 0, rionBytesRecord1.length);
+        streamStorageFS.appendRecord(rionBytesRecord1, 0, rionBytesRecord1.length);
+        streamStorageFS.closeForAppend();
+
+        assertEquals(2, streamStorageFS.getStorageBlocks().size());
+
+
+        byte[] recordBuffer = new byte[34];
+        AtomicLong firstOffset = new AtomicLong();
+        AtomicLong numberOfIterations = new AtomicLong();
+
+        streamStorageFS.iterateFromOffset(recordBuffer, 4, (offset, rionReader) -> {
+            firstOffset.set(offset);
+            numberOfIterations.incrementAndGet();
+            return false;
+        });
+
+        assertEquals(4, firstOffset.get());
+        assertEquals(1, numberOfIterations.get());
 
     }
 
