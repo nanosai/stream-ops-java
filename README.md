@@ -31,8 +31,8 @@ in Nanosai, but in any case, it will be something close to that.
 # Dependencies
 Stream Ops depends on these two other Nanosai projects:
 
-[Mem Ops for Java](https://github.com/nanosai/mem-ops-java)
-[ION Ops for Java](https://github.com/nanosai/rion-ops-java)
+ - [Mem Ops for Java](https://github.com/nanosai/mem-ops-java)
+ - [ION Ops for Java](https://github.com/nanosai/rion-ops-java)
 
 # Getting Started
 
