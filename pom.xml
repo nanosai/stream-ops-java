@@ -6,7 +6,7 @@
 
     <groupId>com.nanosai</groupId>
     <artifactId>stream-ops</artifactId>
-    <version>0.6.4</version>
+    <version>0.7.0</version>
     <packaging>jar</packaging>
 
     <name>Stream Ops for Java</name>
@@ -34,8 +34,8 @@
 
     <scm>
         <connection>scm:git:git://github.com/nanosai/stream-ops-java.git</connection>
-        <developerConnection>scm:git:ssh://github.com:nanosai/rion-ops-java.git</developerConnection>
-        <url>http://github.com/nanosai/rion-ops-java/tree/master</url>
+        <developerConnection>scm:git:ssh://github.com:nanosai/stream-ops-java.git</developerConnection>
+        <url>http://github.com/nanosai/stream-ops-java/tree/master</url>
     </scm>
 
 
@@ -81,12 +81,10 @@
             </plugin>
 
 
-
-            <!--
             <plugin>
                 <groupId>org.sonatype.plugins</groupId>
                 <artifactId>nexus-staging-maven-plugin</artifactId>
-                <version>1.6.7</version>
+                <version>1.6.8</version>
                 <extensions>true</extensions>
                 <configuration>
                     <serverId>ossrh</serverId>
@@ -94,6 +92,7 @@
                     <autoReleaseAfterClose>true</autoReleaseAfterClose>
                 </configuration>
             </plugin>
+
 
 
             <plugin>
@@ -109,6 +108,7 @@
                     </execution>
                 </executions>
             </plugin>
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
@@ -126,7 +126,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-gpg-plugin</artifactId>
-                <version>1.5</version>
+                <version>1.6</version>
                 <executions>
                     <execution>
                         <id>sign-artifacts</id>
@@ -137,7 +137,7 @@
                     </execution>
                 </executions>
             </plugin>
-            -->
+
 
         </plugins>
     </build>

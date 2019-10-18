@@ -46,8 +46,8 @@ public class ECommerceReport implements IRecordProcessor {
             rionReader.nextParse();
             long orderId = rionReader.readInt64();
 
-            rionReader.nextParse();
-            long customerId = rionReader.readInt64();
+            //rionReader.nextParse();
+            //long customerId = rionReader.readInt64();
 
             //System.out.println("   {[" + orderItemId + "][" + productId + "][" + orderId + "][" + customerId + "]}");
             //System.out.println("   {[" + productId + "][" + orderId + "][" + customerId + "]}");

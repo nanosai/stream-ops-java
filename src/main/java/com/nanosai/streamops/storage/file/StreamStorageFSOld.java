@@ -2,7 +2,6 @@ package com.nanosai.streamops.storage.file;
 
 import com.nanosai.rionops.rion.RionFieldTypes;
 import com.nanosai.rionops.rion.read.RionReader;
-import com.nanosai.streamops.StreamOpsException;
 import com.nanosai.streamops.navigation.RecordIterator;
 import com.nanosai.streamops.rion.RionUtil;
 import com.nanosai.streamops.rion.StreamOpsRionFieldTypes;
@@ -14,7 +13,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-public class StreamStorageFS {
+public class StreamStorageFSOld {
     public static final int OFFSET_FIELD_LEAD_TYPE_LENGTH_BYTES_LENGTH = 3;
 
     //public  static final int OFFSET_EXTENDED_RION_TYPE = 1;
@@ -36,14 +35,14 @@ public class StreamStorageFS {
 
     private IAppendListener appendListener = null;
 
-    public StreamStorageFS(String streamId, String rootDirPath) throws IOException {
+    public StreamStorageFSOld(String streamId, String rootDirPath) throws IOException {
         this.streamId    = streamId;
         this.rootDirPath = rootDirPath;
 
         syncFromDisk();
     }
 
-    public StreamStorageFS(String streamId, String rootDirPath, long storageFileBlockMaxSize) throws IOException {
+    public StreamStorageFSOld(String streamId, String rootDirPath, long storageFileBlockMaxSize) throws IOException {
         this.streamId    = streamId;
         this.rootDirPath = rootDirPath;
         this.storageFileBlockMaxSize = storageFileBlockMaxSize;
@@ -51,12 +50,12 @@ public class StreamStorageFS {
         syncFromDisk();
     }
 
-    public StreamStorageFS setOutputStreamFactory(IOutputStreamFactory outputStreamFactory) {
+    public StreamStorageFSOld setOutputStreamFactory(IOutputStreamFactory outputStreamFactory) {
         this.outputStreamFactory = outputStreamFactory;
         return this;
     }
 
-    public StreamStorageFS setAppendListener(IAppendListener listener){
+    public StreamStorageFSOld setAppendListener(IAppendListener listener){
         this.appendListener = listener;
         return this;
     }
@@ -109,13 +108,8 @@ public class StreamStorageFS {
 
     protected void syncFromDisk() throws IOException {
         File rootDir = new File(this.rootDirPath);
-
-        System.out.println(rootDir.getAbsolutePath());
         if(!rootDir.exists()){
-            boolean dirsCreated = rootDir.mkdirs();
-            if(!dirsCreated){
-                throw new StreamOpsException("Could not create stream dir " + rootDir.getAbsolutePath());
-            }
+            rootDir.mkdirs();
         }
         File[] files = rootDir.listFiles();
         for(File file : files) {
@@ -156,9 +150,9 @@ public class StreamStorageFS {
 
         } else {
             this.latestBlock = new StreamStorageBlockFS(createNewStreamBlockFileName(), 0, 0);
-            //openForAppend();
-            //appendOffset();
-            //closeForAppend();
+            openForAppend();
+            appendOffset();
+            closeForAppend();
             this.storageBlocks.add(this.latestBlock);
         }
 
@@ -172,13 +166,10 @@ public class StreamStorageFS {
                         new FileOutputStream(latestBlockFilePath, true);
     }
 
-    /*
     public void incNextRecordOffset() {
         this.nextRecordOffset++;
     }
-    */
 
-    /*
     public void appendOffset() throws IOException {
         int lengthOfOffset         = (255 & RionUtil.lengthOfInt64Value(this.nextRecordOffset));
         int lengthOfLengthOfOffset = (255 & RionUtil.lengthOfInt64Value(lengthOfOffset));
@@ -197,8 +188,6 @@ public class StreamStorageFS {
         this.latestBlockOutputStream.write(this.offsetRionBuffer, 0, lengthOfOffset + OFFSET_FIELD_LEAD_TYPE_LENGTH_BYTES_LENGTH);
         this.latestBlock.fileLength += lengthOfOffset + OFFSET_FIELD_LEAD_TYPE_LENGTH_BYTES_LENGTH;
     }
-     */
-
 
     public void appendRecord(byte[] source, int sourceOffset, int sourceLength) throws IOException {
         if(this.latestBlock.fileLength + sourceLength > storageFileBlockMaxSize){
@@ -209,12 +198,9 @@ public class StreamStorageFS {
             this.latestBlock = newStreamStorageBlockFS;
             openForAppend();
         }
-
-        /*
         if(this.latestBlock.fileLength == 0){
             appendOffset();
         }
-         */
 
         // appendRecord data to file
         this.latestBlockOutputStream.write(source, sourceOffset, sourceLength);
@@ -279,15 +265,6 @@ public class StreamStorageFS {
             while(rionReader.hasNext()){
                 rionReader.nextParse();
 
-                boolean continueIteration = recordProcessor.process(recordOffset, rionReader);
-                if(!continueIteration) {
-                    return;
-                }
-
-                //after processing this record, increment recordOffset for next record - in case no explicit record offset field is found
-                recordOffset++;
-
-                /*
                 if(rionReader.fieldType         == RionFieldTypes.EXTENDED &&
                         rionReader.fieldTypeExtended == StreamOpsRionFieldTypes.OFFSET_EXTENDED_RION_TYPE){
                     //this is a record offset field - read record offset value as int 64 (Java long)
@@ -302,7 +279,6 @@ public class StreamStorageFS {
                     //after processing this record, increment recordOffset for next record - in case no explicit record offset field is found
                     recordOffset++;
                 }
-                */
             }
 
         }
@@ -333,18 +309,6 @@ public class StreamStorageFS {
             while(rionReader.hasNext()){
                 rionReader.nextParse();
 
-
-                if(recordOffset >= fromOffset) {
-                    boolean continueIteration = recordProcessor.process(recordOffset, rionReader);
-                    if(!continueIteration) {
-                        return;
-                    }
-                }
-
-                //after processing this record, increment recordOffset for next record - in case no explicit record offset field is found
-                recordOffset++;
-
-                /*
                 if(rionReader.fieldType         == RionFieldTypes.EXTENDED &&
                         rionReader.fieldTypeExtended == StreamOpsRionFieldTypes.OFFSET_EXTENDED_RION_TYPE){
                     //this is a record offset field - read record offset value as int 64 (Java long)
@@ -361,9 +325,14 @@ public class StreamStorageFS {
                     //after processing this record, increment recordOffset for next record - in case no explicit record offset field is found
                     recordOffset++;
                 }
-                */
             }
+
         }
+
+
+
+
+
     }
 
 

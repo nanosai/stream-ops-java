@@ -89,8 +89,8 @@ public class FullExternalStreamIterationExample {
         streamStorageFS.appendRecord(rionBytesRecord1, 0, length);
         streamStorageFS.appendRecord(rionBytesRecord1, 0, length);
 
-        streamStorageFS.nextRecordOffset += 10;
-        streamStorageFS.appendOffset();
+        //streamStorageFS.nextRecordOffset += 10;
+        //streamStorageFS.appendOffset();
         streamStorageFS.appendRecord(rionBytesRecord1, 0, length);
         streamStorageFS.appendRecord(rionBytesRecord1, 0, length);
         streamStorageFS.appendRecord(rionBytesRecord1, 0, length);

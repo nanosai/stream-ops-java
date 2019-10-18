@@ -1,14 +1,9 @@
 package com.nanosai.streamops.examples.ecommerce;
 
-import com.nanosai.rionops.rion.RionFieldTypes;
-import com.nanosai.rionops.rion.write.RionWriter;
 import com.nanosai.streamops.storage.file.StreamStorageFS;
-import com.nanosai.streamops.util.FileUtil;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.GregorianCalendar;
 import java.util.List;
 
 public class ECommerceStreamIterationExample {

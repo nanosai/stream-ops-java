@@ -24,6 +24,9 @@ public class StreamWriteExample {
         customers.add(new Customer(0, "John Doe"));
         customers.add(new Customer(1, "Jane Dee"));
 
+        long[] orderCustomerIds = new long[10];
+
+
 
         String streamId  = "e-commerce-example-2";
         String streamDir = "data/" + streamId;
@@ -36,7 +39,7 @@ public class StreamWriteExample {
 
         streamStorage.openForAppend();
 
-        long noOfOrders = 10;
+        long noOfOrders = orderCustomerIds.length;
         int noOfOrderItems = 100_000_000;
 
         long startTime = System.currentTimeMillis();
@@ -48,7 +51,7 @@ public class StreamWriteExample {
 
         for(int i=0; i<noOfOrderItems; i++) {
             long productId  = (long) (Math.random() * (double) products.size());
-            long customerId = (long) (Math.random() * (double) customers.size());
+            //long customerId = (long) (Math.random() * (double) customers.size());
             long orderId    = (long) (Math.random() * (double) noOfOrders);
 
             rionWriter.setDestination(rionRecord, 0);
@@ -57,7 +60,7 @@ public class StreamWriteExample {
             //rionWriter.writeInt64( i);              //orderItemId
             rionWriter.writeInt64(productId);       //productId
             rionWriter.writeInt64(orderId);         //orderId
-            rionWriter.writeInt64(customerId);      //customerId
+            //rionWriter.writeInt64(customerId);      //customerId
 
             // date can be obtained from Order object. I can add Order objects later on.
             //GregorianCalendar dateTime = new GregorianCalendar();

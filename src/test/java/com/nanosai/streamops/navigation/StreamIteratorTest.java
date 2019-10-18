@@ -11,6 +11,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class StreamIteratorTest {
 
 
+    /*
     @Test
     public void test() throws IOException {
         FileUtil.deleteDir("data/stream-id");
@@ -38,4 +39,6 @@ public class StreamIteratorTest {
         assertEquals(3, recordIterator.offset);
         assertFalse(recordIterator.hasNext());
     }
+    */
+
 }
