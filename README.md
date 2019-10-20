@@ -57,7 +57,9 @@ in Nanosai, but in any case, it will be something close to that.
 The easiest way to use Stream Ops is via Maven. See the Maven dependency for Stream Ops in the next section.
 
 Alternatively you can clone Stream Ops and build it yourself. Stream Ops have 2 small dependencies which you may
-(or may not) have to clone too. That depends on what you are trying to do.
+(or may not) have to clone too. That depends on what you are trying to do. The dependencies are also available
+from the central Maven repository though, so it is not necessary to clone and build them. Not unless you want
+to compile them all using a different Java version than the Java version they are currently built with.
 
 
 <a name="maven-dependency"></a>
