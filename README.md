@@ -54,18 +54,10 @@ in Nanosai, but in any case, it will be something close to that.
 
 # Getting Started
 
-We are working on getting all our projects into the Maven central repository. Until that succeeds, the way to
-use Stream Ops is:
+The easiest way to use Stream Ops is via Maven. See the Maven dependency for Stream Ops in the next section.
 
-
-Clone / fork Stream Ops and both of the dependencies (RION Ops + Mem Ops) and build all three locally
-to get Stream Ops working.
-
-In a near future we will create a Nanosai aggregate repository which will contain all of our distributed systems,
-distributed data and data science related projects in one repository. Then you can fork just one project to
-play with everything! That aggregate repository will get updated with new versions of the individual projects
-as they are released, and we will make sure that all versions play well together in each release of the aggregate
-repository.
+Alternatively you can clone Stream Ops and build it yourself. Stream Ops have 2 small dependencies which you may
+(or may not) have to clone too. That depends on what you are trying to do.
 
 
 <a name="maven-dependency"></a>
